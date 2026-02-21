@@ -16,14 +16,14 @@ export function useCursorMove(
 
     const [position, setPosition] = useState({ x: null, y: null })
     const positionRef = useRef(position)
-    const getPositionStable = useCallback((() => {
+    const getPosition = useCallback((() => {
         return { ...positionRef.current }
     }), [])
 
     const targetRef = useRef({ x: null, y: null })
 
-    const { currentZoneDataRef, updateCurrentZoneThrottled } = useCursorZone(
-        getPositionStable,
+    const { currentZoneDataRef, updateCurrentZone } = useCursorZone(
+        getPosition,
         zoneSettingsRef,
         changeCursorSrc,
     );
@@ -124,7 +124,7 @@ export function useCursorMove(
 
         // Оптимизация. Условие остановки анимации, когда курсор неподвижен
         if (isNearTarget(positionRef.current, targetRef.current)) {
-            updateCurrentZoneThrottled()
+            updateCurrentZone()
             positionRef.current = { ...targetRef.current }
             setPosition(positionRef.current)
             resetVelocity()
@@ -183,7 +183,6 @@ export function useCursorMove(
 
     return {
         position,
-        getPositionStable,
         stopCursor,
         startCursor,
         currentZoneDataRef

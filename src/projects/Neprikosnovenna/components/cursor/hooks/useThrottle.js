@@ -1,39 +1,46 @@
-import { useRef, useCallback, useEffect } from "react"
+import {useCallback, useEffect, useRef} from 'react';
 
 const useThrottle = (callback, delay) => {
-    const lastCallTime = useRef(0)
-    const timeoutRef = useRef(null)
+    const lastCallTime = useRef(0);
+    const timeoutRef = useRef(null);
+    const callbackRef = useRef(callback);
 
-    // Очищаем таймаут при размонтировании
+    useEffect(() => {
+        callbackRef.current = callback;
+    }, [callback]);
+
     useEffect(() => {
         return () => {
             if (timeoutRef.current) {
-                clearTimeout(timeoutRef.current)
+                clearTimeout(timeoutRef.current);
             }
-        }
-    }, [])
+        };
+    }, []);
 
-    return useCallback(
-        (...args) => {
-            const now = Date.now()
-            const timeElapsed = now - lastCallTime.current
+    return useCallback((...args) => {
+            if (delay <= 0) {
+                callbackRef.current.apply(this, args);
+                return;
+            }
+
+            const now = Date.now();
+            const timeElapsed = now - lastCallTime.current;
 
             if (timeElapsed >= delay) {
-                lastCallTime.current = now
-                callback(...args)
+                lastCallTime.current = now;
+                callbackRef.current.apply(this, args);
             } else {
                 if (timeoutRef.current) {
-                    clearTimeout(timeoutRef.current)
+                    clearTimeout(timeoutRef.current);
                 }
                 timeoutRef.current = setTimeout(() => {
-                    lastCallTime.current = Date.now()
-                    callback(...args)
-                    timeoutRef.current = null
-                }, delay - timeElapsed)
+                    lastCallTime.current = Date.now();
+                    callbackRef.current.apply(this, args);
+                    timeoutRef.current = null;
+                }, delay - timeElapsed);
             }
-        },
-        [callback, delay],
-    )
-}
+        }, [delay]
+    );
+};
 
-export default useThrottle
+export default useThrottle;
