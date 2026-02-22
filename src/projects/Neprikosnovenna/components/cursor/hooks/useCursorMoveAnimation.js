@@ -1,17 +1,21 @@
-import { useCallback, useRef } from "react"
+import {useCallback, useRef} from "react"
 
-export function useCursorMoveAnimation(updatePosition, isStoppedRef) {
+export function useCursorMoveAnimation(updatePositionRef) {
     const animationIdRef = useRef(null)
+
+    const animate = useCallback(() => {
+        updatePositionRef.current?.(); // вызываем актуальную функцию обновления
+    }, [updatePositionRef]);
 
     const startAnimation = useCallback(() => {
         if (animationIdRef.current) return
-        if (!isStoppedRef.current)
-            animationIdRef.current = requestAnimationFrame(updatePosition)
-    }, [])
+        animationIdRef.current = requestAnimationFrame(animate)
+    }, [animate])
 
     const continueAnimation = useCallback(() => {
-        animationIdRef.current = requestAnimationFrame(updatePosition)
-    }, [])
+        // if (animationIdRef.current) return;
+        animationIdRef.current = requestAnimationFrame(animate)
+    }, [animate])
 
     const stopAnimation = useCallback(() => {
         if (animationIdRef.current) {
@@ -20,7 +24,7 @@ export function useCursorMoveAnimation(updatePosition, isStoppedRef) {
         }
     }, [])
 
-    return { startAnimation, continueAnimation, stopAnimation }
+    return {startAnimation, continueAnimation, stopAnimation}
 }
 
 export default useCursorMoveAnimation

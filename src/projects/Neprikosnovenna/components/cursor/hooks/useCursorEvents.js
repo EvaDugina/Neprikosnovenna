@@ -1,11 +1,22 @@
-import { useCallback, useRef } from "react"
+import {useCallback,} from "react"
 
-export function useCursorEvents(handleLeftClickDown, handleLeftClickUp) {
+export function useCursorEvents(handleLeftClickDownRef, handleLeftClickUpRef) {
 
-    // const callbacksRef = useRef({ handleLeftClickDown, handleLeftClickUp });
-    // useEffect(() => {
-    //     callbacksRef.current = { handleLeftClickDown, handleLeftClickUp };
-    // }, [handleLeftClickDown, handleLeftClickUp]);
+    const onPointerDown = useCallback((event) => {
+        event.preventDefault(); // Для сенсоров
+
+        if (event.button === 0) {
+            handleLeftClickDownRef.current?.(event)
+        }
+    }, [handleLeftClickDownRef])
+
+    const onPointerUp = useCallback((event) => {
+        event.preventDefault(); // Для сенсоров
+
+        if (event.button === 0) {
+            handleLeftClickUpRef.current?.(event)
+        }
+    }, [handleLeftClickUpRef])
 
     //
     // PUBLIC
@@ -14,34 +25,14 @@ export function useCursorEvents(handleLeftClickDown, handleLeftClickUp) {
     const enableCursor = useCallback(() => {
         window.addEventListener("pointerdown", onPointerDown)
         window.addEventListener("pointerup", onPointerUp)
-    }, [])
+    }, [onPointerDown, onPointerUp])
 
     const disableCursor = useCallback(() => {
         window.removeEventListener("pointerdown", onPointerDown)
         window.removeEventListener("pointerup", onPointerUp)
-    }, [])
+    }, [onPointerDown, onPointerUp])
 
-    //
-    // LOCAL
-    //
-
-    const onPointerDown = useCallback((event) => {
-        event.preventDefault(); // Для сенсоров
-
-        if (event.button === 0) {
-            handleLeftClickDown(event)
-        }
-    }, [])
-
-    const onPointerUp = useCallback((event) => {
-        event.preventDefault(); // Для сенсоров
-
-        if (event.button === 0) {
-            handleLeftClickUp(event)
-        }
-    }, [])
-
-    return { enableCursor, disableCursor }
+    return {enableCursor, disableCursor}
 }
 
 export default useCursorEvents

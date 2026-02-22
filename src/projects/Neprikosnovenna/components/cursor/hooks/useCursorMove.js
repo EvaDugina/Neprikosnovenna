@@ -1,52 +1,70 @@
-import { useState, useEffect, useRef, useCallback } from "react"
+import {useCallback, useEffect, useRef, useState} from "react"
 import useCursorMovePhysics from "./useCursorMovePhysics"
 import useCursorMoveAnimation from "./useCursorMoveAnimation"
 import useCursorZone from "./useCursorZone"
 
-export function useCursorMove(
-    settings,
-    showCursor,
-    enableCursor,
-    disableCursor,
-    changeCursorSrc,
-    zoneSettingsRef
-) {
-    const isTargetNotInitRef = useRef(false)
-    const isStoppedRef = useRef(true)
+export function useCursorMove(settings, showCursor, enableCursor, disableCursor, changeCursorSrc, zoneSettingsRef) {
+    const [position, setPosition] = useState({x: null, y: null})
 
-    const [position, setPosition] = useState({ x: null, y: null })
     const positionRef = useRef(position)
     const getPosition = useCallback((() => {
-        return { ...positionRef.current }
+        return {...positionRef.current}
     }), [])
 
-    const targetRef = useRef({ x: null, y: null })
-
-    const { currentZoneDataRef, updateCurrentZone } = useCursorZone(
-        getPosition,
-        zoneSettingsRef,
-        changeCursorSrc,
-    );
-
-    const { resetVelocity, isNeedToStop, getRecalculatedPosition } =
-        useCursorMovePhysics(
-            settings.stiffness,
-            settings.mass,
-            settings.damping,
-            settings.maxSpeed,
-        )
-
+    const isStoppedRef = useRef(true)
+    const isTargetNotInitRef = useRef(false)
+    const targetRef = useRef({x: null, y: null})
     const windowSizeRef = useRef({
-        width: null,
-        height: null,
+        width: null, height: null,
     })
 
-    // Инициализация
-    useEffect(() => {
-        init()
-        return () => {
-            destroy()
+    const updatePositionRef = useRef(null);
+
+    //
+    // INITIALIZATION HOOKS
+    //
+
+    const {currentZoneDataRef, updateCurrentZone} = useCursorZone(getPosition, zoneSettingsRef, changeCursorSrc,);
+
+    const {
+        resetVelocity, isNeedToStop, getRecalculatedPosition
+    } = useCursorMovePhysics(settings.stiffness, settings.mass, settings.damping, settings.maxSpeed,)
+
+    const {startAnimation, continueAnimation, stopAnimation} = useCursorMoveAnimation(updatePositionRef)
+
+    //
+    // HANDLERS
+    //
+
+    const onPointerMove = useCallback((event) => {
+        event.preventDefault(); // Для сенсоров
+
+        targetRef.current = {x: event.clientX, y: event.clientY}
+        startAnimation()
+    }, [startAnimation])
+
+    const onPointerCancel = useCallback((event) => {
+        event.preventDefault(); // Для сенсоров
+    }, [])
+
+    const onBlur = useCallback(() => {
+        stopAnimation()
+    }, [stopAnimation])
+
+    const onResize = useCallback(() => {
+        if (positionRef.current.x === null || positionRef.current.y === null) return;
+
+        const newWindowSize = {
+            width: window.innerWidth, height: window.innerHeight,
         }
+
+        positionRef.current = {
+            x: (positionRef.current.x / windowSizeRef.current.width) * newWindowSize.width,
+            y: (positionRef.current.y / windowSizeRef.current.height) * newWindowSize.height,
+        }
+        setPosition(positionRef.current)
+
+        windowSizeRef.current = {...newWindowSize}
     }, [])
 
     //
@@ -59,7 +77,7 @@ export function useCursorMove(
         window.addEventListener("pointermove", onPointerMove)
         window.addEventListener("pointercancel", onPointerCancel)
         startAnimation()
-    }, [])
+    }, [onPointerMove, onPointerCancel, startAnimation])
 
     const stopCursor = useCallback(() => {
         isStoppedRef.current = true
@@ -67,22 +85,20 @@ export function useCursorMove(
         window.removeEventListener("pointermove", onPointerMove)
         window.removeEventListener("pointercancel", onPointerCancel)
         stopAnimation()
-    }, [])
+    }, [onPointerMove, onPointerCancel, stopAnimation])
 
     //
     // INIT & DESTROY
     //
 
-    const init = () => {
+    const init = useCallback(() => {
         windowSizeRef.current = {
-            width: window.innerWidth,
-            height: window.innerHeight,
+            width: window.innerWidth, height: window.innerHeight,
         }
 
         if (settings.startX != null && settings.startY != null) {
             positionRef.current = {
-                x: windowSizeRef.current.width * settings.startX,
-                y: windowSizeRef.current.height * settings.startY,
+                x: windowSizeRef.current.width * settings.startX, y: windowSizeRef.current.height * settings.startY,
             }
             setPosition(positionRef.current)
             showCursor()
@@ -95,21 +111,28 @@ export function useCursorMove(
 
         window.addEventListener("blur", onBlur)
         window.addEventListener("resize", onResize)
-    }
+    }, [settings, showCursor, startCursor, enableCursor, onBlur, onResize])
 
-    const destroy = () => {
+    const destroy = useCallback(() => {
         stopCursor()
         disableCursor()
         window.removeEventListener("blur", onBlur)
         window.removeEventListener("resize", onResize)
-    }
+    }, [stopCursor, disableCursor, onBlur, onResize])
+
+    useEffect(() => {
+        init()
+        return () => {
+            destroy()
+        }
+    }, [init, destroy])
+
+    //
+    // UPDATE POSITION
+    //
 
     const updatePosition = useCallback(() => {
-        if (
-            targetRef.current.x === null ||
-            targetRef.current.y === null ||
-            isStoppedRef.current
-        ) {
+        if ((targetRef.current.x === null || targetRef.current.y === null) || isStoppedRef.current) {
             stopAnimation()
             return
         }
@@ -117,7 +140,7 @@ export function useCursorMove(
         // Инициализация на месте указателя
         if (isTargetNotInitRef.current) {
             isTargetNotInitRef.current = false
-            positionRef.current = { ...targetRef.current }
+            positionRef.current = {...targetRef.current}
             setPosition(positionRef.current)
             showCursor()
         }
@@ -125,7 +148,7 @@ export function useCursorMove(
         // Оптимизация. Условие остановки анимации, когда курсор неподвижен
         if (isNeedToStop(positionRef.current, targetRef.current)) {
             updateCurrentZone()
-            positionRef.current = { ...targetRef.current }
+            positionRef.current = {...targetRef.current}
             setPosition(positionRef.current)
             resetVelocity()
             stopAnimation()
@@ -136,56 +159,18 @@ export function useCursorMove(
         setPosition(positionRef.current)
 
         continueAnimation()
-    }, [])
+    }, [stopAnimation, showCursor, isNeedToStop, updateCurrentZone, resetVelocity, getRecalculatedPosition, continueAnimation])
 
-    const { startAnimation, continueAnimation, stopAnimation } =
-        useCursorMoveAnimation(updatePosition, isStoppedRef)
+    useEffect(() => {
+        updatePositionRef.current = updatePosition;
+    }, [updatePosition]);
 
     //
-    // HANDLERS
+    // RETURN
     //
-
-    const onPointerMove = useCallback((event) => {
-        event.preventDefault(); // Для сенсоров
-
-        targetRef.current = { x: event.clientX, y: event.clientY }
-        startAnimation()
-    }, [])
-
-    const onPointerCancel = useCallback((event) => {
-        event.preventDefault(); // Для сенсоров
-    }, [])
-
-    const onBlur = useCallback(() => {
-        stopAnimation()
-    }, [])
-
-    const onResize = useCallback(() => {
-        if (positionRef.current.x === null || positionRef.current.y === null) return;
-
-        const newWindowSize = {
-            width: window.innerWidth,
-            height: window.innerHeight,
-        }
-
-        positionRef.current = {
-            x:
-                (positionRef.current.x / windowSizeRef.current.width) *
-                newWindowSize.width,
-            y:
-                (positionRef.current.y / windowSizeRef.current.height) *
-                newWindowSize.height,
-        }
-        setPosition(positionRef.current)
-
-        windowSizeRef.current = { ...newWindowSize }
-    }, [])
 
     return {
-        position,
-        stopCursor,
-        startCursor,
-        currentZoneDataRef
+        position, stopCursor, startCursor, currentZoneDataRef
     }
 }
 

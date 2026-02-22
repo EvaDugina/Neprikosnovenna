@@ -1,73 +1,77 @@
-import { forwardRef, useImperativeHandle, useCallback, useState } from "react";
+import {forwardRef, useCallback, useEffect, useImperativeHandle, useRef, useState} from "react";
 import "./Cursor.css";
 
-import { useCursorMove } from "./hooks/useCursorMove";
+import useCursorMove from "./hooks/useCursorMove";
 import useCursorEvents from "./hooks/useCursorEvents";
 
 const Cursor = forwardRef((props, ref) => {
 
-  const { settings, zoneSettingsRef} = props 
+    const {settings, zoneSettingsRef} = props
 
-  const [src, setSrc] = useState(settings.imgCursor);
-  const changeCursorSrc = useCallback((newSrc) => {
-    if (newSrc === undefined || newSrc === null) return;
-    setSrc(newSrc);
-  }, []);
+    const [src, setSrc] = useState(settings.imgCursor);
+    const changeCursorSrc = useCallback((newSrc) => {
+        if (newSrc === undefined || newSrc === null) return;
+        setSrc(newSrc);
+    }, []);
 
-  const handleLeftClickDown = useCallback(() => {
-    changeCursorSrc(currentZoneDataRef.current.imgCursorClicked);
-    settings.handleLeftClickDown?.(currentZoneDataRef.current.elementId);
-  }, []);
+    const [isHidden, setIsHidden] = useState(true);
+    const hideCursor = useCallback(() => {
+        setIsHidden(true);
+    }, []);
+    const showCursor = useCallback(() => {
+        setIsHidden(false);
+    }, []);
 
-  const handleLeftClickUp = useCallback(() => {
-    changeCursorSrc(currentZoneDataRef.current.imgCursor);
-    settings.handleLeftClickUp?.(currentZoneDataRef.current.elementId);
-  }, []);
+    const handleLeftClickDownRef = useRef(null);
+    const handleLeftClickUpRef = useRef(null);
 
-  const { enableCursor, disableCursor } = useCursorEvents(
-    handleLeftClickDown,
-    handleLeftClickUp,
-  );
+    const {enableCursor, disableCursor} = useCursorEvents(handleLeftClickDownRef, handleLeftClickUpRef,);
+    const {
+        position, stopCursor, startCursor, currentZoneDataRef
+    } = useCursorMove(settings, showCursor, enableCursor, disableCursor, changeCursorSrc, zoneSettingsRef);
 
-  const [isHidden, setIsHidden] = useState(true);
-  const hideCursor = useCallback(() => {
-    setIsHidden(true);
-  }, []);
+    //
+    //
+    //
 
-  const showCursor = useCallback(() => {
-    setIsHidden(false);
-  }, []);
+    const handleLeftClickDown = useCallback(() => {
+        changeCursorSrc(currentZoneDataRef.current.imgCursorClicked);
+        settings.handleLeftClickDown?.(currentZoneDataRef.current.elementId);
+    }, [changeCursorSrc, settings, currentZoneDataRef]);
 
-  const {position, stopCursor, startCursor, currentZoneDataRef} = useCursorMove(
-    settings,
-    showCursor,
-    enableCursor,
-    disableCursor,
-    changeCursorSrc,
-    zoneSettingsRef
-  );
+    const handleLeftClickUp = useCallback(() => {
+        changeCursorSrc(currentZoneDataRef.current.imgCursor);
+        settings.handleLeftClickUp?.(currentZoneDataRef.current.elementId);
+    }, [changeCursorSrc, settings, currentZoneDataRef]);
 
-  useImperativeHandle(ref, () => ({
-    hide: hideCursor,
-    show: showCursor,
-    disable: disableCursor,
-    enable: enableCursor,
-    stop: stopCursor, 
-    start: startCursor
-  }));
+    useEffect(() => {
+        handleLeftClickDownRef.current = handleLeftClickDown;
+        handleLeftClickUpRef.current = handleLeftClickUp;
+    }, [handleLeftClickDown, handleLeftClickUp]);
 
-  return (
-    <img
-      id="Cursor"
-      className="cursor ignore-cursor not-allowed z-999"
-      src={src}
-      alt="муха"
-      style={{
-        transform: `translate(-26.5%, -9%) translate3d(${position.x}px, ${position.y}px, 0)`,
-        display: isHidden ? "none" : "block",
-      }}
-    />
-  );
+    //
+    //
+    //
+
+    useImperativeHandle(ref, () => ({
+        hide: hideCursor,
+        show: showCursor,
+        disable: disableCursor,
+        enable: enableCursor,
+        stop: stopCursor,
+        start: startCursor
+    }));
+
+    return (<img
+        id="Cursor"
+        className="cursor ignore-cursor not-allowed z-999"
+        src={src}
+        alt="муха"
+        style={{
+            transform: `translate(-26.5%, -9%) translate3d(${position.x}px, ${position.y}px, 0)`,
+            display: isHidden ? "none" : "block",
+        }}
+    />);
 });
 
 export default Cursor;
