@@ -28,7 +28,7 @@ export function useCursorMove(
         changeCursorSrc,
     );
 
-    const { resetVelocity, isNearTarget, getRecalculatedPosition } =
+    const { resetVelocity, isNeedToStop, getRecalculatedPosition } =
         useCursorMovePhysics(
             settings.stiffness,
             settings.mass,
@@ -123,7 +123,7 @@ export function useCursorMove(
         }
 
         // Оптимизация. Условие остановки анимации, когда курсор неподвижен
-        if (isNearTarget(positionRef.current, targetRef.current)) {
+        if (isNeedToStop(positionRef.current, targetRef.current)) {
             updateCurrentZone()
             positionRef.current = { ...targetRef.current }
             setPosition(positionRef.current)

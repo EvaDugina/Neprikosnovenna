@@ -1,16 +1,16 @@
-import { useRef, useCallback } from "react"
+import {useRef, useCallback, useEffect} from "react"
 
 const EPS = 0.1
 
 function useCursorMovePhysics(stiffness, mass, damping, maxSpeed) {
     const velocityRef = useRef({ x: 0, y: 0 })
+    const settingsRef = useRef({stiffness, mass, damping, maxSpeed})
 
-    // const settingsRef = useRef({ stiffness, mass, damping, maxSpeed })
-    // useEffect(() => {
-    //     settingsRef.current = { stiffness, mass, damping, maxSpeed }
-    // }, [stiffness, mass, damping, maxSpeed])
+    useEffect(() => {
+        settingsRef.current = {stiffness, mass, damping, maxSpeed}
+    }, [stiffness, mass, damping, maxSpeed]);
 
-    const isNearTarget = useCallback(((position, target) => {
+    const isNeedToStop = useCallback(((position, target) => {
         const isNearTarget =
             Math.hypot(
                 target.x - position.x,
@@ -28,7 +28,7 @@ function useCursorMovePhysics(stiffness, mass, damping, maxSpeed) {
     const getRecalculatedPosition = useCallback((position, target) => {
         if (target.x === null || target.y === null) return { ...position }
 
-        // const { stiffness, mass, damping, maxSpeed } = settingsRef.current
+        const { stiffness, mass, damping, maxSpeed } = settingsRef.current
 
         // Рассчитываем силу (разница между текущей и целевой позицией)
         const forceX = (target.x - position.x) * stiffness
@@ -62,7 +62,7 @@ function useCursorMovePhysics(stiffness, mass, damping, maxSpeed) {
 
     return {
         resetVelocity,
-        isNearTarget,
+        isNeedToStop,
         getRecalculatedPosition,
     }
 }
