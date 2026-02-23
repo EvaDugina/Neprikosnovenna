@@ -18,9 +18,11 @@ figure {
     height: 100%;
     opacity: 0;
     object-fit: cover;
+  }
+}
 
-    &.show-smoothly {
-      transition: opacity 3s ease-in-out;
-    }
+video {
+  &.show-smoothly {
+    transition: opacity 3s ease-in-out;
   }
 }
