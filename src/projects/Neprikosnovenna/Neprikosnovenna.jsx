@@ -3,11 +3,11 @@ import React, {useCallback, useEffect, useMemo, useRef,} from "react";
 
 import {CursorImages, CursorSettings, CursorZoneSettings,} from "./components/cursor/CursorSettingsHandler";
 import Cursor from "./components/cursor/Cursor";
-import Flash from "./components/Flash/Flash";
-import {FlashType} from "./components/Flash/FlashSettingsHandler";
 import Background from "./components/background/Background";
 import Button from "./components/button/Button";
+import FlashProvider from "./components/flash/FlashProvider.jsx";
 import ImagePortrait from "./components/portrait/ImagePortrait.jsx";
+import useSoundEffects from "./hooks/useSoundEffects.js";
 
 const Zone = {
     NONE: 0, BACK: 1, PORTRAIT: 2, BUTTON: 3,
@@ -66,8 +66,9 @@ const WhenYouSoBeautifullyDied = () => {
     //
     //
 
-    const handleLeftClickDown = useCallback(() => {
-
+    const handleLeftClickDown = useCallback((currentElementId) => {
+        if (currentElementId === "BtnNeprikosnovenna") {
+        }
     }, []);
 
     const handleLeftClickUp = useCallback(() => {
@@ -108,10 +109,6 @@ const WhenYouSoBeautifullyDied = () => {
                     id="BtnNeprikosnovenna"
                     text="неприкосновенна"
                 />
-
-                <Flash type={FlashType.BEHIND}/>
-                <Flash type={FlashType.FRONT}/>
-                <Flash/>
 
                 <ImagePortrait/>
             </article>

@@ -8,6 +8,9 @@ import {FlashType} from "./components/Flash/FlashSettingsHandler";
 import Background from "./components/background/Background";
 import Button from "./components/button/Button";
 import VideoPortrait from "./components/portrait/VideoPortrait.jsx";
+import useSoundEffects from "./hooks/useSoundEffects.js";
+import FlashProvider from "./components/flash/FlashProvider.jsx";
+import useSoundEffect from "./hooks/useSoundEffect.js";
 
 const Zone = {
     NONE: 0, BACK: 1, PORTRAIT: 2, BUTTON: 3,
@@ -18,6 +21,7 @@ const WhenYouSoBeautifullyDied = () => {
     const backgroundRef = useRef(null);
     const buttonRef = useRef(null);
     const portraitRef = useRef(null);
+    const flashProviderRef = useRef(null);
 
     const isClickedRef = useRef(false);
     const isVideoEndedRef = useRef(false);
@@ -36,6 +40,14 @@ const WhenYouSoBeautifullyDied = () => {
             portraitRef.current.show(false);
         }
     }, []);
+
+    //
+    //
+    //
+
+    const { play: playAudio } = useSoundEffect(useMemo(() => {
+        return "/audio/СимуляцияОргазма.mov"
+    }, []));
 
     //
     //
@@ -89,8 +101,16 @@ const WhenYouSoBeautifullyDied = () => {
     //
 
     const handleLeftClickDown = useCallback((currentElementId) => {
+        if (currentElementId === "BtnNeprikosnovenna") {
+            if ((!isClickedRef.current && !isBloody) || (isBloody && (!isClickedRef.current || isVideoEndedRef.current))) {
+                flashProviderRef.current.flashes();
+                playAudio(0);
+            }
+        }
+
         if (isBloody) return;
         if (isVideoEndedRef.current) return;
+
         if (currentElementId === "BtnNeprikosnovenna") {
             isClickedRef.current = true;
             portraitRef.current.show(true);
@@ -99,7 +119,7 @@ const WhenYouSoBeautifullyDied = () => {
             buttonRef.current.click();
             buttonRef.current.disable();
         }
-    }, [isBloody]);
+    }, [playAudio, isBloody]);
 
     const handleLeftClickUp = useCallback(() => {
     }, []);
@@ -149,9 +169,7 @@ const WhenYouSoBeautifullyDied = () => {
                     text="неприкосновенна"
                 />
 
-                <Flash type={FlashType.BEHIND}/>
-                <Flash type={FlashType.FRONT}/>
-                <Flash/>
+                <FlashProvider ref={flashProviderRef}/>
 
                 <VideoPortrait
                     ref={portraitRef}
