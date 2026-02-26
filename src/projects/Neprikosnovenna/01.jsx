@@ -163,13 +163,15 @@ const WhenYouSoBeautifullyDied = () => {
                 <Button
                     ref={buttonRef}
                     id="BtnNeprikosnovenna"
+                    zIndex={4}
                     text="неприкосновенна"
                 />
 
-                <FlashProvider ref={flashProviderRef}/>
+                <FlashProvider ref={flashProviderRef} zIndex={3}/>
 
                 <VideoPortrait
                     ref={portraitRef}
+                    zIndex={1}
                     settings={videoSettings}
                 />
             </article>
@@ -177,11 +179,12 @@ const WhenYouSoBeautifullyDied = () => {
             <Background
                 ref={backgroundRef}
                 id="Background-1"
-                classes="bg-blue z-3"
+                zIndex={3}
+                classes="bg-blue"
             />
         </main>
 
-        <Background id="Background-0" classes="bg-white z-0"/>
+        <Background id="Background-0" classes="bg-white" zIndex={0}/>
     </>);
 };
 

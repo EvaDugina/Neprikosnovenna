@@ -2,7 +2,7 @@ import "./Background.css";
 import {forwardRef, useCallback, useImperativeHandle, useState} from "react";
 
 const Background = forwardRef((props, ref) => {
-    const {id = "", classes = "bg-white z-0 d-none"} = props
+    const {id = "", classes = "bg-white d-none", zIndex} = props
 
     const [isHidden, setIsHidden] = useState(false);
     const hide = useCallback(() => {
@@ -18,7 +18,7 @@ const Background = forwardRef((props, ref) => {
     }));
 
     return <div
-        id={id} className={"background  " + classes}
+        id={id} className={`background ${classes} z-${zIndex}`}
         style={{
             display: isHidden ? "none" : "block",
         }}></div>;

@@ -10,7 +10,7 @@ const getClassNameByButtonType = (buttonType) => {
 };
 
 const Button = forwardRef((props, ref) => {
-    const {id, text} = props;
+    const {id, zIndex, text} = props;
 
     const [buttonType, setButtonType] = useState(ButtonType.DEFAULT);
     const buttonTypeRef = useRef(buttonType);
@@ -46,7 +46,7 @@ const Button = forwardRef((props, ref) => {
 
     const classes = getClassNameByButtonType(buttonType);
 
-    return (<button id={id} className={`btn-neprikosnovenna not-allowed z-6 ${classes}`}>
+    return (<button id={id} className={`btn-neprikosnovenna not-allowed z-${zIndex} ${classes}`}>
         {text}
     </button>);
 });

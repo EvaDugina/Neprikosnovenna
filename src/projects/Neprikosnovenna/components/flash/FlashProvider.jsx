@@ -6,6 +6,8 @@ const FLASH_DURATION = 100;
 
 const FlashProvider = forwardRef((props, ref) => {
 
+    const {zIndex} = props
+
     const flashFrontRef = useRef(null);
     const flashDefaultRef = useRef(null);
 
@@ -44,8 +46,8 @@ const FlashProvider = forwardRef((props, ref) => {
 
     return (
         <>
-            <Flash ref={flashFrontRef} type={FlashType.FRONT} duration={FLASH_DURATION}/>
-            <Flash ref={flashDefaultRef} duration={FLASH_DURATION}/>
+            <Flash ref={flashFrontRef} type={FlashType.FRONT} zIndex={zIndex} duration={FLASH_DURATION}/>
+            <Flash ref={flashDefaultRef} zIndex={zIndex} duration={FLASH_DURATION}/>
         </>
     );
 

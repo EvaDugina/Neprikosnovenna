@@ -3,7 +3,7 @@ import React, {forwardRef, useImperativeHandle, useRef,} from "react";
 import useVideoController from "./hooks/useVideoController.js";
 
 const VideoPortrait = forwardRef((props, ref) => {
-    const {settings} = props;
+    const {settings, zIndex} = props;
 
     const videoRef = useRef(null);
     const {show, hide, play, pause, stop, scrollToEnd, scrollToStart} = useVideoController(settings, videoRef);
@@ -16,7 +16,7 @@ const VideoPortrait = forwardRef((props, ref) => {
             <video
                 id="Portrait"
                 ref={videoRef}
-                className="portrait video not-allowed z-2"
+                className={`portrait video not-allowed z-${zIndex+1}`}
                 poster="/images/НЕПРИКОСНОВЕННА.png"
                 muted
             >
@@ -28,7 +28,7 @@ const VideoPortrait = forwardRef((props, ref) => {
             </video>
             <img
                 id="Portrait"
-                className="portrait image not-allowed z-1"
+                className={`portrait image not-allowed z-${zIndex}`}
                 src="/images/НЕПРИКОСНОВЕННА.png"
                 alt="НЕПРИКОСНОВЕННА"
             />

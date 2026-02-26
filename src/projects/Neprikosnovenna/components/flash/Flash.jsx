@@ -13,7 +13,7 @@ const StaticData = {
 };
 
 const Flash = forwardRef((props, ref) => {
-    const {type = FlashType.DEFAULT, duration} = props;
+    const {type = FlashType.DEFAULT, zIndex, duration} = props;
 
     const containerRef = useRef(null);
 
@@ -48,7 +48,7 @@ const Flash = forwardRef((props, ref) => {
             // key={crypto?.randomUUID() ?? Date.now().toString()}
             ref={containerRef}
             id={`FlashContainer${type}`}
-            className="flash-container flash-animation ignore-cursor blend-exclusion z-3 d-none"
+            className={`flash-container flash-animation ignore-cursor blend-exclusion z-${zIndex} d-none`}
         >
             <div id="FlashBack" className="flash-container flash-back not-allowed"/>
         </div>);
@@ -57,7 +57,7 @@ const Flash = forwardRef((props, ref) => {
     return (<div
         ref={containerRef}
         id={`FlashContainer${type}`}
-        className={`flash-container flash-animation ignore-cursor z-3 d-none`}
+        className={`flash-container flash-animation ignore-cursor z-${zIndex} d-none`}
     >
         <img
             id={`Flash${type}`}

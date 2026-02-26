@@ -1,11 +1,11 @@
 import "./Neprikosnovenna.css";
 import React, {useCallback, useEffect, useMemo, useRef,} from "react";
-
 import {CursorImages, CursorSettings, CursorZoneSettings,} from "./components/cursor/CursorSettingsHandler";
 import Cursor from "./components/cursor/Cursor";
 import Background from "./components/background/Background";
 import Button from "./components/button/Button";
 import ImagePortrait from "./components/portrait/ImagePortrait.jsx";
+import YandexAd from "../../components/YandexAd.jsx";
 
 const Zone = {
     NONE: 0, BACK: 1, PORTRAIT: 2, BUTTON: 3,
@@ -89,6 +89,12 @@ const WhenYouSoBeautifullyDied = () => {
     //
     //
 
+    const incontentAdId = import.meta.env.VITE_AD_INCONTENT_ID ?? null;
+
+    //
+    //
+    //
+
     return (<>
         <Cursor
             ref={cursorRef}
@@ -97,20 +103,39 @@ const WhenYouSoBeautifullyDied = () => {
         />
 
         <main>
+
+            {/* Рекламный баннер */}
+            {/*<YandexAd*/}
+            {/*    blockId={incontentAdId}*/}
+            {/*    className="ad-incontent"*/}
+            {/*    zIndex={1}*/}
+            {/*/>*/}
+            {/* Остальной контент страницы */}
+
             <article className="portrait-container-default">
                 <div className="cursor-container ignore-cursor d-none"></div>
 
                 <Button
                     ref={buttonRef}
                     id="BtnNeprikosnovenna"
+                    zIndex={3}
                     text="неприкосновенна"
                 />
 
-                <ImagePortrait/>
+                <ImagePortrait zIndex={2}/>
             </article>
+
+            {/* Рекламный баннер */}
+            {/*<YandexAd*/}
+            {/*    blockId={incontentAdId}*/}
+            {/*    className="ad-incontent"*/}
+            {/*    zIndex={1}*/}
+            {/*/>*/}
+            {/* Остальной контент страницы */}
+
         </main>
 
-        <Background id="Background-0" classes="bg-white z-0"/>
+        <Background id="Background-0" classes="bg-white" zIndex={0}/>
     </>);
 };
 
