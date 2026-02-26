@@ -1,8 +1,7 @@
 import {forwardRef, useCallback, useEffect, useImperativeHandle, useRef, useState} from "react";
 import "./Cursor.css";
 
-import useCursorMove from "./hooks/useCursorMove";
-import useCursorEvents from "./hooks/useCursorEvents";
+import useCursor from "./hooks/useCursor.js";
 
 const Cursor = forwardRef((props, ref) => {
 
@@ -25,10 +24,9 @@ const Cursor = forwardRef((props, ref) => {
     const handleLeftClickDownRef = useRef(null);
     const handleLeftClickUpRef = useRef(null);
 
-    const {enableCursor, disableCursor} = useCursorEvents(handleLeftClickDownRef, handleLeftClickUpRef,);
     const {
-        position, stopCursor, startCursor, currentZoneDataRef
-    } = useCursorMove(settings, showCursor, enableCursor, disableCursor, changeCursorSrc, zoneSettingsRef);
+        position, enableCursor, disableCursor, stopCursor, startCursor, currentZoneDataRef
+    } = useCursor(settings, showCursor, changeCursorSrc, zoneSettingsRef, handleLeftClickDownRef, handleLeftClickUpRef,);
 
     //
     //

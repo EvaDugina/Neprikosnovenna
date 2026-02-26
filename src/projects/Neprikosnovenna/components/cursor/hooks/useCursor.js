@@ -2,8 +2,9 @@ import {useCallback, useEffect, useRef, useState} from "react"
 import useCursorMovePhysics from "./useCursorMovePhysics"
 import useCursorMoveAnimation from "./useCursorMoveAnimation"
 import useCursorZone from "./useCursorZone"
+import useCursorEvents from "./useCursorEvents.js";
 
-export function useCursorMove(settings, showCursor, enableCursor, disableCursor, changeCursorSrc, zoneSettingsRef) {
+export function useCursor(settings, showCursor, changeCursorSrc, zoneSettingsRef, handleLeftClickDownRef, handleLeftClickUpRef,) {
     const [position, setPosition] = useState({x: null, y: null})
 
     const positionRef = useRef(position)
@@ -25,6 +26,8 @@ export function useCursorMove(settings, showCursor, enableCursor, disableCursor,
     //
 
     const {currentZoneDataRef, updateCurrentZone} = useCursorZone(getPosition, zoneSettingsRef, changeCursorSrc,);
+
+    const {enableCursor, disableCursor} = useCursorEvents(updatePositionRef, handleLeftClickDownRef, handleLeftClickUpRef,);
 
     const {
         resetVelocity, isNeedToStop, getRecalculatedPosition
@@ -174,4 +177,4 @@ export function useCursorMove(settings, showCursor, enableCursor, disableCursor,
     }
 }
 
-export default useCursorMove
+export default useCursor

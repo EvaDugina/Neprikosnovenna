@@ -101,7 +101,7 @@ const WhenYouSoBeautifullyDied = () => {
         if (currentElementId === "BtnNeprikosnovenna") {
             if ((!isClickedRef.current && !isBloody) || (isBloody && (!isClickedRef.current || isVideoEndedRef.current))) {
                 flashProviderRef.current.flashes();
-                playAudio(0);
+                playAudio();
             }
         }
 

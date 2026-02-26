@@ -1,14 +1,15 @@
 import {useCallback,} from "react"
 
-export function useCursorEvents(handleLeftClickDownRef, handleLeftClickUpRef) {
+export function useCursorEvents(updatePositionRef, handleLeftClickDownRef, handleLeftClickUpRef) {
 
     const onPointerDown = useCallback((event) => {
         event.preventDefault(); // Для сенсоров
+        updatePositionRef.current()
 
         if (event.button === 0) {
             handleLeftClickDownRef.current?.(event)
         }
-    }, [handleLeftClickDownRef])
+    }, [updatePositionRef, handleLeftClickDownRef])
 
     const onPointerUp = useCallback((event) => {
         event.preventDefault(); // Для сенсоров

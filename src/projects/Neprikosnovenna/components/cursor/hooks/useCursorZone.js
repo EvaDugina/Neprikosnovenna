@@ -1,9 +1,16 @@
 import {useCallback, useEffect, useRef} from "react"
-import { useThrottleCallback } from '@react-hook/throttle';
+import {useThrottleCallback} from '@react-hook/throttle';
+import {CursorImages} from "../CursorSettingsHandler.js";
 
 export function useCursorZone(getPosition, zoneSettingsRef, changeCursorSrc,) {
     const elementZoneRef = useRef(null);
-    const currentZoneDataRef = useRef(null);
+    const currentZoneDataRef = useRef({
+        elementId: null,
+        imgCursor: CursorImages.DEFAULT,
+        imgCursorClicked: CursorImages.DEFAULT,
+        handleOn: null,
+        handleOff: null,
+    });
 
     const handleOnZone = useCallback((elementZone) => {
         if (!elementZone) return
