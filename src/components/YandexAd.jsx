@@ -3,7 +3,7 @@ import "./YandexAd.css"
 
 import React, { useEffect, useRef } from 'react';
 
-const YandexAd = ({ blockId, className = '', zIndex }) => {
+const YandexAd = ({ blockId, src, className = '', zIndex }) => {
     const adRef = useRef(null);
     const isDev = import.meta.env.DEV; // Vite определяет режим разработки
 
@@ -64,7 +64,11 @@ const YandexAd = ({ blockId, className = '', zIndex }) => {
                 ref={adRef}
                 className={`ad-container ${className} z-${zIndex}`}
             >
-                {blockId ? `🧪 Тестовый блок: ${blockId}` : '📦 Место для рекламы'}
+                <img
+                    className={`ad-container__image`}
+                    src={src}
+                    alt="реклама"
+                />
             </div>
         );
     }

@@ -104,34 +104,51 @@ const WhenYouSoBeautifullyDied = () => {
 
         <main>
 
-            {/* Рекламный баннер */}
-            {/*<YandexAd*/}
-            {/*    blockId={incontentAdId}*/}
-            {/*    className="ad-incontent"*/}
-            {/*    zIndex={1}*/}
-            {/*/>*/}
-            {/* Остальной контент страницы */}
+            <div className="container z-1">
 
-            <article className="portrait-container-default">
-                <div className="cursor-container ignore-cursor d-none"></div>
+                {/*<div className="center"></div>*/}
 
-                <Button
-                    ref={buttonRef}
-                    id="BtnNeprikosnovenna"
-                    zIndex={3}
-                    text="неприкосновенна"
+                <article className="portrait-container-default center">
+                    <div className="cursor-container ignore-cursor d-none"></div>
+
+                    <Button
+                        ref={buttonRef}
+                        id="BtnNeprikosnovenna"
+                        zIndex={3}
+                        text="неприкосновенна"
+                    />
+
+                    <ImagePortrait zIndex={2}/>
+                </article>
+
+                {/*/!* Реклама*!/*/}
+                <YandexAd
+                    blockId={incontentAdId}
+                    className="side ad-header"
+                    src="/images/adv/1.jpg"
+                    zIndex={1}
                 />
+                <YandexAd
+                    blockId={incontentAdId}
+                    className="side ad-left-center"
+                    src="/images/adv/2.png"
+                    zIndex={1}
+                />
+                <YandexAd
+                    blockId={incontentAdId}
+                    className="side ad-right-center"
+                    src="/images/adv/3.webp"
+                    zIndex={1}
+                />
+                <YandexAd
+                    blockId={incontentAdId}
+                    className="side ad-footer"
+                    src="/images/adv/4.webp"
+                    zIndex={1}
+                />
+                {/*/!* Остальной контент страницы *!/*/}
 
-                <ImagePortrait zIndex={2}/>
-            </article>
-
-            {/* Рекламный баннер */}
-            {/*<YandexAd*/}
-            {/*    blockId={incontentAdId}*/}
-            {/*    className="ad-incontent"*/}
-            {/*    zIndex={1}*/}
-            {/*/>*/}
-            {/* Остальной контент страницы */}
+            </div>
 
         </main>
 
