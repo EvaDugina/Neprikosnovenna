@@ -5,9 +5,7 @@ import {CursorImages, CursorSettings, CursorZoneSettings,} from "./components/cu
 import Cursor from "./components/cursor/Cursor";
 import Background from "./components/background/Background";
 import Button from "./components/button/Button";
-import FlashProvider from "./components/flash/FlashProvider.jsx";
 import ImagePortrait from "./components/portrait/ImagePortrait.jsx";
-import useSoundEffects from "./hooks/useSoundEffects.js";
 
 const Zone = {
     NONE: 0, BACK: 1, PORTRAIT: 2, BUTTON: 3,
@@ -66,9 +64,7 @@ const WhenYouSoBeautifullyDied = () => {
     //
     //
 
-    const handleLeftClickDown = useCallback((currentElementId) => {
-        if (currentElementId === "BtnNeprikosnovenna") {
-        }
+    const handleLeftClickDown = useCallback(() => {
     }, []);
 
     const handleLeftClickUp = useCallback(() => {

@@ -3,12 +3,9 @@ import React, {useCallback, useEffect, useMemo, useRef, useState,} from "react";
 
 import {CursorImages, CursorSettings, CursorZoneSettings,} from "./components/cursor/CursorSettingsHandler";
 import Cursor from "./components/cursor/Cursor";
-import Flash from "./components/Flash/Flash";
-import {FlashType} from "./components/Flash/FlashSettingsHandler";
 import Background from "./components/background/Background";
 import Button from "./components/button/Button";
 import VideoPortrait from "./components/portrait/VideoPortrait.jsx";
-import useSoundEffects from "./hooks/useSoundEffects.js";
 import FlashProvider from "./components/flash/FlashProvider.jsx";
 import useSoundEffect from "./hooks/useSoundEffect.js";
 
@@ -45,7 +42,7 @@ const WhenYouSoBeautifullyDied = () => {
     //
     //
 
-    const { play: playAudio } = useSoundEffect(useMemo(() => {
+    const {play: playAudio} = useSoundEffect(useMemo(() => {
         return "/audio/СимуляцияОргазма.mov"
     }, []));
 

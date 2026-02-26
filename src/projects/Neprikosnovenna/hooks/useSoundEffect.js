@@ -33,7 +33,7 @@ function useSoundEffect(src, volume = 1) {
         const gainNode = gainNodeRef.current;
         const buffer = bufferRef.current;
 
-        if (!context || !gainNode || !buffer) return;
+        if (!context || context.state === 'closed'  || !gainNode || !buffer) return;
 
         const playSound = () => {
             const source = context.createBufferSource();
