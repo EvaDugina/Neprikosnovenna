@@ -1,0 +1,9 @@
+/* ArticlePage.css */
+
+.ad-incontent {
+    width: 50%;
+    height: 100%;
+    display: block;
+    position: relative;
+    background: red;
+}
