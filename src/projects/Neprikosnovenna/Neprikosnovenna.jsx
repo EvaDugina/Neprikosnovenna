@@ -5,7 +5,6 @@ import Cursor from "./components/cursor/Cursor";
 import Background from "./components/background/Background";
 import Button from "./components/button/Button";
 import ImagePortrait from "./components/portrait/ImagePortrait.jsx";
-import YandexAd from "../../components/YandexAd.jsx";
 
 const Zone = {
     NONE: 0, BACK: 1, PORTRAIT: 2, BUTTON: 3,
@@ -120,33 +119,6 @@ const WhenYouSoBeautifullyDied = () => {
 
                     <ImagePortrait zIndex={2}/>
                 </article>
-
-                {/*/!* Реклама*!/*/}
-                <YandexAd
-                    blockId={incontentAdId}
-                    className="side ad-header"
-                    src="/images/adv/1.jpg"
-                    zIndex={1}
-                />
-                <YandexAd
-                    blockId={incontentAdId}
-                    className="side ad-left-center"
-                    src="/images/adv/2.png"
-                    zIndex={1}
-                />
-                <YandexAd
-                    blockId={incontentAdId}
-                    className="side ad-right-center"
-                    src="/images/adv/3.webp"
-                    zIndex={1}
-                />
-                <YandexAd
-                    blockId={incontentAdId}
-                    className="side ad-footer"
-                    src="/images/adv/4.webp"
-                    zIndex={1}
-                />
-                {/*/!* Остальной контент страницы *!/*/}
 
             </div>
 
