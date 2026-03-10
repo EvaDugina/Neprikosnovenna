@@ -14,3 +14,8 @@
 .background--white {
     background-color: white;
 }
+
+.background--ketchup {
+    background: url("/images/background/heinz-logo.jpg") repeat;
+    background-size: 95px auto;
+}

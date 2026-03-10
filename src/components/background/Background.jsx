@@ -19,10 +19,9 @@ const Background = forwardRef((props, ref) => {
 
     useImperativeHandle(ref, () => ({ hide, show }));
 
-    const modifierClass =
-        variant === "blue"
-            ? styles["background--blue"]
-            : styles["background--white"];
+
+
+    const modifierClass = styles[`background--${variant}`];
 
     const className = [
         styles.background,
@@ -36,8 +35,9 @@ const Background = forwardRef((props, ref) => {
     return (
         <div
             id={id}
+            key={`${id}`}
             className={className}
-            style={{ display: isHidden ? "none" : "block" }}
+            style={{display: isHidden ? "none" : "block",}}
         />
     );
 });
