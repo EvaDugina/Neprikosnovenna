@@ -6,5 +6,5 @@ services:
             dockerfile: Dockerfile.prod # Используем тот же Dockerfile
         container_name: react-nginx
         ports:
-            - "3000:8080"
+            - "8080:8080"
         # Больше не нужно монтировать конфиг, он уже в образе
