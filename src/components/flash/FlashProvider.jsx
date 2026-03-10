@@ -19,7 +19,7 @@ function getRandomInt(max) {
  * @param {number} [props.zIndex]
  */
 const FlashProvider = forwardRef((props, ref) => {
-    const { zIndex } = props;
+    const { zIndex, onFlashStart, onFlashEnd } = props;
 
     const flashFrontRef = useRef(null);
     const flashVzgladRef = useRef(null);
@@ -28,20 +28,26 @@ const FlashProvider = forwardRef((props, ref) => {
 
     const generateFlashQueue = (flashRef) => [
         flashRef,
-        null,
         flashRef,
-        null,
+        flashPortraitNegativeRef,
+        flashRef,
+        flashPortraitNegativeRef,
         flashRef,
         flashRef,
-        null,
+        flashPortraitNegativeRef,
+        flashRef
     ];
 
     const flashes = useCallback(async (n = 1) => {
         const flash = async (flashQueue) => {
             if (flashQueue.length <= 0) return;
 
-            const flashRef = flashQueue[0] ?? flashPortraitNegativeRef;
+            const flashRef = flashQueue[0] ?? flashNegativeRef;
+
+            onFlashStart?.();
             await flashRef.current.flash();
+            await onFlashEnd?.();
+
             flashQueue.shift();
 
             if (flashQueue.length > 0) {

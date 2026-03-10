@@ -53,9 +53,32 @@ const WhenYouSoBeautifullyDied = () => {
         }
     }, []);
 
+    //
+    // VIDEO CONTROLL
+    //
+
+    const handleVideoEnded = useCallback(() => {
+        isVideoEndedRef.current = true;
+        buttonRef.current.reset();
+    }, []);
+
+    const videoSettings = useMemo(() => {
+        return {
+            onEnded: handleVideoEnded,
+        };
+    }, [handleVideoEnded]);
+
+    //
+    // AUDIO CONTROL
+    //
+
     const { playAudio } = useSoundEffect(
         useMemo(() => "/audio/СимуляцияОргазма.mov", []),
     );
+
+    //
+    // CURSOR CONTROL
+    //
 
     const handleOnButton = () => {
         backgroundSecondaryRef.current?.hide();
@@ -111,7 +134,6 @@ const WhenYouSoBeautifullyDied = () => {
             if (currentElementId === "BtnNeprikosnovenna") {
                 if (buttonRef.current.isDisabled())
                     return
-                flashProviderRef.current.flashes();
                 if (
                     (!isClickedRef.current && !isBloody) ||
                     (isBloody &&
@@ -120,8 +142,9 @@ const WhenYouSoBeautifullyDied = () => {
                     buttonRef.current.click();
                     portraitRef.current.hideVideo();
                     portraitRef.current.showVideo();
-                    playAudio();
                 }
+                playAudio();
+                await flashProviderRef.current.flashes();
             }
 
             if (isBloody) return;
@@ -165,17 +188,18 @@ const WhenYouSoBeautifullyDied = () => {
         [handleLeftClickDown, handleLeftClickUp],
     );
 
-    const handleVideoEnded = useCallback(() => {
-        isVideoEndedRef.current = true;
-        buttonRef.current.reset();
-        backgroundMainRef.current.changeType(BackgroundType.KETCHUP)
-    }, []);
+    //
+    // FLASH CONTROLL
+    //
 
-    const videoSettings = useMemo(() => {
-        return {
-            onEnded: handleVideoEnded,
-        };
-    }, [handleVideoEnded]);
+    const onFlashStart = useCallback(() => {
+        // backgroundMainRef.current.changeType(BackgroundType.KETCHUP)
+    }, [])
+
+    const onFlashEnd = useCallback(async () => {
+        // backgroundMainRef.current.changeType(BackgroundType.WHITE)
+        // return await new Promise((resolve) => setTimeout(resolve, 25));
+    }, [])
 
     return (
         <>
@@ -194,7 +218,12 @@ const WhenYouSoBeautifullyDied = () => {
                         text="неприкосновенна"
                     />
 
-                    <FlashProvider ref={flashProviderRef} zIndex={4} />
+                    <FlashProvider
+                        ref={flashProviderRef}
+                        zIndex={4}
+                        onFlashStart={onFlashStart}
+                        onFlashEnd={onFlashEnd}
+                    />
 
                     <PortraitProvider
                         ref={portraitRef}

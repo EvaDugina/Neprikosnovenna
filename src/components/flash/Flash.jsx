@@ -18,15 +18,15 @@ const Flash = forwardRef((props, ref) => {
     const { type = FlashType.PORTRAIT_NEGATIVE, zIndex, duration } = props;
 
     const [isHidden, setIsHidden] = useState(true);
-    const [isAnimating, setIsAnimating] = useState(false);
+    const [isAnimate, setIsAnimate] = useState(false);
 
     const flash = useCallback(async () => {
         setIsHidden(false);
-        setIsAnimating(true);
+        setIsAnimate(true);
 
         await new Promise((resolve) => setTimeout(resolve, duration));
 
-        setIsAnimating(false);
+        setIsAnimate(false);
         setIsHidden(true);
     }, [duration]);
 
@@ -34,7 +34,7 @@ const Flash = forwardRef((props, ref) => {
 
     const containerClass = [
         styles.flash__container,
-        isAnimating && styles["flash__container--animation"],
+        isAnimate && styles["flash__container--animation"],
         isHidden && styles["flash__container--hidden"],
         "ignore-cursor",
         `z-${zIndex}`,
