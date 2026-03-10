@@ -3,6 +3,6 @@ export const ImagePortraitType = {
 };
 
 export const StaticData = {
-    [ImagePortraitType.DEFAULT]: {src: "/images/НЕПРИКОСНОВЕННА.png"},
-    [ImagePortraitType.POLSCHENA]: {src: "/images/ПОЛЬЩЕНА_01.png"},
+    [ImagePortraitType.DEFAULT]: {src: "/images/НЕПРИКОСНОВЕННА.webp"},
+    [ImagePortraitType.POLSCHENA]: {src: "/images/ПОЛЬЩЕНА_01.webp"},
 };

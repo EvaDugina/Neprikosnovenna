@@ -10,7 +10,7 @@ function AppRouter() {
             <ScrollToTop/>
             <Routes>
                 {routes.map((route, index) => (
-                    <Route key={index} path={route.path} element={<route.component/>}/>
+                    <Route key={route.path} path={route.path} element={<route.component/>}/>
                 ))}
                 {/* Маршрут 404 */}
                 <Route path="*" element={<div>Страница не найдена</div>}/>

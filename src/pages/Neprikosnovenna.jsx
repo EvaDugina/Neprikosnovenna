@@ -11,7 +11,7 @@ const Zone = {
     NONE: 0, BACK: 1, PORTRAIT: 2, BUTTON: 3,
 };
 
-const WhenYouSoBeautifullyDied = () => {
+const Neprikosnovenna = () => {
     const cursorRef = useRef(null);
     const buttonRef = useRef(null);
 
@@ -115,5 +115,5 @@ const WhenYouSoBeautifullyDied = () => {
         </>);
 };
 
-export {WhenYouSoBeautifullyDied};
-export default WhenYouSoBeautifullyDied;
+export {Neprikosnovenna};
+export default Neprikosnovenna;

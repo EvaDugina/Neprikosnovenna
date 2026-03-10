@@ -15,7 +15,7 @@ const Zone = {
     NONE: 0, BACK: 1, PORTRAIT: 2, BUTTON: 3,
 };
 
-const WhenYouSoBeautifullyDied = () => {
+const AndIAmTheOnlyOne = () => {
     const cursorRef = useRef(null);
     const backgroundSecondaryRef = useRef(null);
     const backgroundMainRef = useRef(null);
@@ -222,5 +222,5 @@ const WhenYouSoBeautifullyDied = () => {
         </>);
 };
 
-export {WhenYouSoBeautifullyDied};
-export default WhenYouSoBeautifullyDied;
+export {AndIAmTheOnlyOne};
+export default AndIAmTheOnlyOne;

@@ -18,6 +18,10 @@
 Dockerfile.* text eol=lf
 
 # Бинарные файлы
+*.mp4 binary
+*.webm binary
+*.mov binary
+*.webp binary
 *.png binary
 *.jpg binary
 *.jpeg binary

@@ -1,5 +1,7 @@
-import Neprikosnovenna from "./pages/Neprikosnovenna";
-import page01 from "./pages/01.jsx";
+import React from "react";
+
+const Neprikosnovenna = React.lazy(() => import('./pages/Neprikosnovenna'));
+const AndIAmTheOnlyOne = React.lazy(() => import('./pages/./AndIAmTheOnlyOne'));
 
 export const routes = [
     {
@@ -26,6 +28,6 @@ export const routes = [
         keywords:
             "искусство, web-инсталляция, неприкосновенна, сакральное, рукотворное",
         ogImage: "/icons/ОПЛОДОТВОРЕНИЕ_LOD2.png",
-        component: page01,
+        component: AndIAmTheOnlyOne,
     },
 ];

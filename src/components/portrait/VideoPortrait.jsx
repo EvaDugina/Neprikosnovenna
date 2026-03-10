@@ -14,7 +14,8 @@ const VideoPortrait = forwardRef((props, ref) => {
         id="Portrait"
         ref={ref}
         className={`${styles.portrait} ${styles["portrait--video"]} not-allowed z-${zIndex}`}
-        poster="/images/НЕПРИКОСНОВЕННА.png"
+        poster="/images/НЕПРИКОСНОВЕННА.webp"
+        preload="metadata"
         muted
     >
         <source

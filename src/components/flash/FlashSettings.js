@@ -5,7 +5,7 @@ export const FlashType = {
 export const StaticData = {
     [FlashType.NEGATIVE]: {src: ""},
     [FlashType.PORTRAIT_NEGATIVE]: {src: ""},
-    [FlashType.FRONT]: {src: "/images/flash/01.jpg"},
-    [FlashType.BEHIND]: {src: "/images/flash/02.jpg"},
-    [FlashType.VZGLAD]: {src: "/images/flash/ВЗГЛЯД.png"},
+    [FlashType.FRONT]: {src: "/images/flash/01.webp"},
+    [FlashType.BEHIND]: {src: "/images/flash/02.webp"},
+    [FlashType.VZGLAD]: {src: "/images/flash/ВЗГЛЯД.webp"},
 };
