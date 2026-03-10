@@ -60,6 +60,6 @@ const PortraitProvider = forwardRef((props, ref) => {
     </>);
 });
 
-PortraitProvider.displayName = "VideoPortrait";
+PortraitProvider.displayName = "PortraitProvider";
 
 export default PortraitProvider;

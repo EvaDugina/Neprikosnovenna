@@ -1,5 +1,6 @@
 import styles from "./Portrait.module.scss";
 import React, {forwardRef} from "react";
+import ImagePortrait from "./ImagePortrait.jsx";
 
 /**
  * Статичный портрет (изображение).
@@ -28,5 +29,7 @@ const VideoPortrait = forwardRef((props, ref) => {
         />
     </video>);
 });
+
+VideoPortrait.displayName = "VideoPortrait";
 
 export default VideoPortrait;

@@ -13,7 +13,7 @@ function AppRouter() {
                     <Route key={route.path} path={route.path} element={<route.component/>}/>
                 ))}
                 {/* Маршрут 404 */}
-                <Route path="*" element={<div>Страница не найдена</div>}/>
+                <Route path="*" element={<div>Украли!</div>}/>
             </Routes>
         </Router>);
 }

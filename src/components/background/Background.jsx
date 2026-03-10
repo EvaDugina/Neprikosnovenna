@@ -1,5 +1,5 @@
 import "./Background.css";
-import {forwardRef, useCallback, useImperativeHandle, useState} from "react";
+import {forwardRef, useCallback, useImperativeHandle, useState, memo} from "react";
 import styles from "./Background.module.css";
 import {BackgroundType} from "./BackgroundSettings.js";
 
@@ -40,4 +40,4 @@ const Background = forwardRef((props, ref) => {
 
 Background.displayName = "Background";
 
-export default Background;
+export default memo(Background);

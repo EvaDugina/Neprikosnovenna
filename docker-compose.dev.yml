@@ -9,6 +9,5 @@ services:
         volumes:
             - ./src:/app/src
             - ./public:/app/public
-            - ./package-lock.json:/app/package-lock.json
         environment:
             - CHOKIDAR_USEPOLLING=true # Для отслеживания изменений файлов в Docker

@@ -1,6 +1,7 @@
 import styles from "./Portrait.module.scss";
-import React, {useEffect, useState} from "react";
+import React from "react";
 import {ImagePortraitType, StaticData} from "./ImagePortraitSettings.js";
+import PortraitProvider from "./PortraitProvider.jsx";
 
 /**
  * Статичный портрет (изображение).
@@ -9,11 +10,7 @@ import {ImagePortraitType, StaticData} from "./ImagePortraitSettings.js";
  */
 const ImagePortrait = ({type = ImagePortraitType.DEFAULT, zIndex}) => {
 
-    const [imagePortraitSrc, setImagePortraitSrc] = useState(StaticData[type].src);
-
-    useEffect(() => {
-        setImagePortraitSrc(StaticData[type].src);
-    }, [type]);
+    const imagePortraitSrc = StaticData[type].src;
 
     return (<img
         id="Portrait"
@@ -22,5 +19,7 @@ const ImagePortrait = ({type = ImagePortraitType.DEFAULT, zIndex}) => {
         alt="НЕПРИКОСНОВЕННА"
     />);
 }
+
+ImagePortrait.displayName = "ImagePortrait";
 
 export default ImagePortrait;

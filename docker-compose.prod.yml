@@ -1,24 +1,15 @@
 version: "3.8"
 
 services:
-    react-app:
-        build:
-            context: .
-            dockerfile: Dockerfile.prod
-        container_name: react-app
-        networks:
-            - app-network
 
-    nginx:
+    react-app:
         build:
             context: .
             dockerfile: Dockerfile.prod # Используем тот же Dockerfile
         container_name: react-nginx
         ports:
-            - "3000:80"
+            - "3000:8080"
         # Больше не нужно монтировать конфиг, он уже в образе
-        depends_on:
-            - react-app
         networks:
             - app-network
 

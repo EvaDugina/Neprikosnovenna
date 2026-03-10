@@ -35,6 +35,8 @@ const AndIAmTheOnlyOne = () => {
 
     useEffect(() => {
         if (isBloody) {
+            backgroundSecondaryRef.current.changeType(BackgroundType.KETCHUP);
+            portraitRef.current.c
             portraitRef.current.scrollToEndVideo();
             portraitRef.current.showVideo();
         }

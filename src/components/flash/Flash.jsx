@@ -1,4 +1,4 @@
-import React, {forwardRef, useCallback, useImperativeHandle, useState,} from "react";
+import React, {forwardRef, useCallback, useImperativeHandle, useState, memo} from "react";
 import styles from "./Flash.module.css";
 import {FlashType, StaticData} from "./FlashSettings.js";
 
@@ -63,4 +63,4 @@ const Flash = forwardRef((props, ref) => {
 
 Flash.displayName = "Flash";
 
-export default Flash;
+export default memo(Flash);
