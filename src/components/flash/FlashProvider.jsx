@@ -7,7 +7,7 @@ import React, {
 import Flash from "./Flash.jsx";
 import { FlashType } from "./FlashSettings.js";
 
-const FLASH_DURATION = 100;
+const FLASH_DURATION = 150;
 
 function getRandomInt(max) {
     return Math.floor(Math.random() * max);
@@ -33,12 +33,9 @@ const FlashProvider = forwardRef((props, ref) => {
         flashRef,
         flashPortraitNegativeRef,
         flashRef,
-        flashRef,
-        flashPortraitNegativeRef,
-        flashRef
     ];
 
-    const flashes = useCallback(async (n = 1) => {
+    const flashes = useCallback(async (flashType = null) => {
         const flash = async (flashQueue) => {
             if (flashQueue.length <= 0) return;
 
@@ -54,14 +51,11 @@ const FlashProvider = forwardRef((props, ref) => {
                 await flash(flashQueue);
             }
         };
+        if (flashType === null) ref = getRandomInt(2) === 0 ? flashFrontRef : flashVzgladRef;
+        else if (flashType === FlashType.FRONT) ref = flashFrontRef;
+        else ref = flashVzgladRef;
 
-        for (let i = 0; i < n; i++) {
-            let random = getRandomInt(2)
-            let ref = null
-            if (random === 0) ref = flashFrontRef;
-            else ref = flashVzgladRef;
-            await flash(generateFlashQueue(ref));
-        }
+        await flash(generateFlashQueue(ref));
     }, []);
 
     useImperativeHandle(ref, () => ({ flashes }));

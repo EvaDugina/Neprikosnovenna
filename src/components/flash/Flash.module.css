@@ -76,8 +76,10 @@
 }
 
 .flash__image--type-vzglad {
-    width: 200%;
-    top: 50%;
+    /*width: 200%;*/
+    height: 80%;
+    /*top: 50%;*/
+    top: 40%;
     left: 50%;
     transform: translate(-50%, -41%);
 }

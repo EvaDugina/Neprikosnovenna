@@ -9,6 +9,7 @@ import PortraitProvider from "../components/portrait/PortraitProvider.jsx";
 import FlashProvider from "../components/flash/FlashProvider.jsx";
 import useSoundEffect from "../hooks/useSoundEffect.js";
 import {BackgroundType} from "../components/background/BackgroundSettings.js";
+import {FlashType} from "../components/flash/FlashSettings.js";
 
 const Zone = {
     NONE: 0, BACK: 1, PORTRAIT: 2, BUTTON: 3,
@@ -46,6 +47,7 @@ const WhenYouSoBeautifullyDied = () => {
     const handleVideoEnded = useCallback(() => {
         isVideoEndedRef.current = true;
         buttonRef.current.reset();
+        backgroundSecondaryRef.current.changeType(BackgroundType.KETCHUP)
     }, []);
 
     const videoSettings = useMemo(() => {
@@ -112,13 +114,20 @@ const WhenYouSoBeautifullyDied = () => {
     const handleLeftClickDown = useCallback(async (currentElementId) => {
         if (currentElementId === "BtnNeprikosnovenna") {
             if (buttonRef.current.isDisabled()) return
-            if ((!isClickedRef.current && !isBloody) || (isBloody && (!isClickedRef.current || isVideoEndedRef.current))) {
-                buttonRef.current.click();
-                portraitRef.current.hideVideo();
-                portraitRef.current.showVideo();
-            }
+
             playAudio();
-            await flashProviderRef.current.flashes();
+            buttonRef.current.click();
+
+            if (!isClickedRef.current && !isBloody) {
+                await flashProviderRef.current.flashes(FlashType.FRONT);
+                flashProviderRef.current.flashes(FlashType.VZGLAD);
+            } else if (isBloody && (!isClickedRef.current)) {
+                await flashProviderRef.current.flashes();
+            } else if (isVideoEndedRef.current) {
+                await flashProviderRef.current.flashes();
+            } else {
+                await flashProviderRef.current.flashes();
+            }
         }
 
         if (isBloody) return;
