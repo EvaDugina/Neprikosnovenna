@@ -28,13 +28,16 @@ COPY --from=builder /app/dist /usr/share/nginx/html
 COPY for-docker/nginx.conf /etc/nginx/conf.d/default.conf
 
 # Создаем не-root пользователя для безопасности
-RUN addgroup -g 1001 -S nodejs && \
-    adduser -S -u 1001 nodejs && \
-    chown -R nodejs:nodejs /usr/share/nginx/html && \
+RUN addgroup -g 1001 -S leonardo && \
+    adduser -S -u 1001 leonardo && \
+    mkdir -p /var/cache/nginx/client_temp && \
+    chown -R leonardo:leonardo /usr/share/nginx/html && \
     chmod -R 755 /usr/share/nginx/html
 
+RUN chown -R leonardo:leonardo /run /var/cache/nginx
+
 # Переключаемся на не-root пользователя
-USER nodejs
+USER leonardo
 
 # Открываем порт
 EXPOSE 8080
