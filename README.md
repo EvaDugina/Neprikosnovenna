@@ -1,6 +1,6 @@
-# **_[Neprikosnovenna](http://82.202.138.61/neprikosnovenna/and-i-am-the-only-one-who-knows-that-you-look-better-with-blood) Web-Триптих_**
+# **_[🔗 ₦Ɇ₱Ɽł₭Ø₴₦ØVɆ₦₦₳](http://82.202.138.61/neprikosnovenna/and-i-am-the-only-one-who-knows-that-you-look-better-with-blood) [Web-Триптих]_**
 
-Динамическая инсталляция [**_«Неприкосновенна»_**](http://82.202.138.61/neprikosnovenna/and-i-am-the-only-one-who-knows-that-you-look-better-with-blood) посвящена снятию оппозиции между руктоворным и сакральным. Потому как и само сакральное только тогда становится сакральным, когда его хочется украсть, уничтожить, спасти или сохранить. Так или иначе, но до живого всегда хочется дотронуться. 
+_Динамическая инсталляция_ [**_🔗«Неприкосновенна»_**](http://82.202.138.61/neprikosnovenna/and-i-am-the-only-one-who-knows-that-you-look-better-with-blood) _посвящена снятию оппозиции между **руктоворным и сакральным**. Потому как и само сакральное только тогда становится сакральным, когда его хочется украсть, уничтожить, спасти или сохранить. Так или иначе, но до живого всегда хочется дотронуться._
 
 <kbd>
 <img src=".docs/screenshots/1-01.webp" alt="Скриншот 01 - Неприкосновенна" align="center">
