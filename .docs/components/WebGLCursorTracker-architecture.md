@@ -1,6 +1,4 @@
-# WebGLCursorTracker — Архитектура
-
-## Обзор
+# WebGLCursorTracker
 
 Модуль реализует накопление кликов (в процентах относительно контейнера) и их батч‑отрисовку одним WebGL draw-call'ом: на каждый клик рисуется прямоугольник (2 треугольника = 6 вершин) с одной и той же текстурой курсора.
 
@@ -23,25 +21,30 @@ src/components/cursor/
 ### 1. Хук `useClicks.js` — слой данных (state + persistence)
 
 **State-хранилище:**
+
 - `clicksMap: Map<id, clickData>` — хранит объект клика по id
 - `clicksOrder: string[]` — порядок отрисовки (и восстановления из storage)
 - `clicks: clickData[]` — вычисляется через `useMemo()` как `clicksOrder -> clicksMap.get(id)`
 
 **Загрузка при монтировании:**
+
 - читает `localStorage['clicks']`
 - ожидает массив объектов `{id, x, y, timestamp}`
 - кладёт в `Map` и `order`
 
 **Запись в localStorage (оптимизация):**
+
 - `asyncSaveToStorage` = `debounce(..., 1000)`
 - внутри debounce ещё `setTimeout(..., 0)`, чтобы запись не блокировала текущий тик
 - запись происходит при изменении `clicks` и только если `clicks.length > 0`
 
 **API хука:**
+
 - `addClick(x, y)` — генерирует `crypto.randomUUID()`, сохраняет `{id, x, y, timestamp}`, обновляет Map и order
 - `clearClicks()` — чистит state и localStorage
 
 **Проблемы при масштабировании:**
+
 - Хук рассчитан на рост массива без ограничений
 - Для 10k+ кликов JSON stringify/parse и память становятся узким местом
 
@@ -50,12 +53,15 @@ src/components/cursor/
 ### 2. Компонент `WebGLCursorTracker.jsx` — слой рендера (WebGL canvas)
 
 **Рендерит:**
+
 - `<canvas class="webgl-cursor-container">` поверх контента (absolute, 100%, pointerEvents: none)
 
 **Props:**
+
 - `zIndex` — z-index для overlay
 
 **Императивный интерфейс (через forwardRef + useImperativeHandle):**
+
 - `saveClickPosition(cursorPositionPercents)` — троттлит клики (не чаще 150ms), вызывает `addClick(x, y)`
 
 **Текущая реализация (instancing + render-once):**
@@ -63,6 +69,7 @@ src/components/cursor/
 Вместо генерации 6 вершин на каждый клик, компонент хранит **одну** базовую геометрию (квад из 2 треугольников = 6 вершин) и отдельный **instance buffer** с позициями кликов.
 
 **WebGL pipeline (useEffect, один раз):**
+
 - создаёт WebGL2 контекст или WebGL1 + расширение `ANGLE_instanced_arrays`
 - компилирует шейдеры и линкует программу
 - создаёт:
@@ -73,6 +80,7 @@ src/components/cursor/
 - подписывается на `resize` и обновляет viewport
 
 **Render-once (без постоянного rAF):**
+
 - `render()` вызывается:
   - после загрузки текстуры
   - при изменении массива `clicks`
@@ -85,6 +93,7 @@ src/components/cursor/
     - WebGL1: `ext.drawArraysInstancedANGLE(...)`
 
 **Важно (anti-bug): stale closure**
+
 - `render()` определяется внутри `useEffect([])` и иначе замыкает первоначальный `clicks` (обычно пустой).
 - Поэтому актуальные клики прокидываются через `clicksRef.current`, а `render` хранится в `renderRef.current`.
 - Это гарантирует, что pipeline не пересоздаётся, но данные для отрисовки всегда свежие.
@@ -105,12 +114,14 @@ src/components/cursor/
 ### Страница `Neprikosnovenna.jsx`
 
 **Ответственности:**
+
 - Управляет зонами курсора (`Cursor` + zoneSettings)
 - Обрабатывает клики мыши через `handleLeftClickDown/Up`
 - На клике по `Portrait` вычисляет координаты курсора в процентах относительно `<article>`
 - Делегирует сохранение клика в трекер через `cursorTrackerRef.current.saveClickPosition(...)`
 
 **Используемый компонент:**
+
 - На странице подключён `EnhancedCursorTracker` (не `WebGLCursorTracker` напрямую)
 - Но интерфейс тот же: `ref.saveClickPosition({x, y})`
 
@@ -179,5 +190,5 @@ EnhancedCursorTracker / WebGLCursorTracker
 ### Преимущества
 
 - **Производительность**: 1 draw call для 10k+ спрайтов
-- **Память**: меньше дублирования данных (6 вершин vs 6 * N вершин)
+- **Память**: меньше дублирования данных (6 вершин vs 6 \* N вершин)
 - **Стабильность**: нет пересоздания GPU ресурсов при каждом клике
