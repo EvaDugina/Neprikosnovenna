@@ -104,7 +104,7 @@ const CursorFingerprintTracker = forwardRef((props, ref) => {
 
     let gl = canvas.getContext("webgl2", {
       alpha: true,
-      premultipliedAlpha: false,
+      premultipliedAlpha: true,
     });
     let isWebGL2 = !!gl;
 
@@ -112,11 +112,11 @@ const CursorFingerprintTracker = forwardRef((props, ref) => {
       gl =
         canvas.getContext("webgl", {
           alpha: true,
-          premultipliedAlpha: false,
+          premultipliedAlpha: true,
         }) ||
         canvas.getContext("experimental-webgl", {
           alpha: true,
-          premultipliedAlpha: false,
+          premultipliedAlpha: true,
         });
     }
 
@@ -200,7 +200,8 @@ const CursorFingerprintTracker = forwardRef((props, ref) => {
             uniform float u_alpha;
             void main() {
                 vec4 color = texture(u_texture, v_texCoord);
-                fragColor = vec4(color.rgb, color.a * u_alpha);
+                float a = color.a * u_alpha;
+                fragColor = vec4(color.rgb * a, a);
             }
         `
       : `
@@ -210,7 +211,8 @@ const CursorFingerprintTracker = forwardRef((props, ref) => {
             uniform float u_alpha;
             void main() {
                 vec4 color = texture2D(u_texture, v_texCoord);
-                gl_FragColor = vec4(color.rgb, color.a * u_alpha);
+                float a = color.a * u_alpha;
+                gl_FragColor = vec4(color.rgb * a, a);
             }
         `;
 
@@ -323,7 +325,7 @@ const CursorFingerprintTracker = forwardRef((props, ref) => {
     };
 
     gl.enable(gl.BLEND);
-    gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
+    gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
 
     // Render-once функция
     function render() {
@@ -568,7 +570,11 @@ const CursorFingerprintTracker = forwardRef((props, ref) => {
         transition: `opacity ${FADE_IN_DURATION}ms ease-in`,
       }}
     >
-      <canvas ref={webglCanvasRef} style={{ opacity: CANVAS_OPACITY }} aria-hidden />
+      <canvas
+        ref={webglCanvasRef}
+        style={{ opacity: CANVAS_OPACITY }}
+        aria-hidden
+      />
       <canvas ref={sessionCanvasRef} aria-hidden />
     </div>
   );
