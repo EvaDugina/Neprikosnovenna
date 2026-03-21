@@ -9,5 +9,4 @@ export const FingerprintConfig = {
   HOTSPOT_X: 0.265,
   HOTSPOT_Y: 0.09,
   IMAGE_URL: CursorImages.POINTER,
-  IMAGE_CLICKED_URL: CursorImages.POINTER_CLICKED,
 };

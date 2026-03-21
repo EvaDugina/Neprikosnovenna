@@ -13,7 +13,6 @@ src/components/cursor/
     CursorFingerprintTrackerSettings.js   # Конфигурация (константы)
     hooks/
         useFingerprintAPI.js              # Fetch-обёртки для REST API
-        useFingerprintAnimation.js        # Таймерная анимация кликов Layer 2
 ```
 
 ---
@@ -56,28 +55,16 @@ void main() {
 - Входные: проценты [0..100] относительно контейнера
 - Преобразование в NDC: `x_ndc = (x% / 100) * 2 - 1`, `y_ndc = -((y% / 100) * 2 - 1)`
 
-### Layer 2 — 2D Canvas (динамический, анимированный)
+### Layer 2 — 2D Canvas (динамический, статичный)
 
-Отрисовывает **отпечатки текущей сессии** пользователя.
+Отрисовывает **отпечатки текущей сессии** пользователя. Без анимации.
 
-- **Рендер:** `ctx.drawImage()` при каждом добавлении клика или смене состояния анимации
-- **Анимация:** периодическая смена pointer.png ↔ pointer_clicked.png
+- **Рендер:** `drawSingleFingerprint()` — рисует один отпечаток при добавлении (без полного redraw)
+- **Полный redraw:** `redrawSession()` вызывается только при resize
+- **Данные:** refs-only (`sessionClicksRef`), без React state — нет re-renders
 - **DPR:** canvas масштабируется через `ctx.scale(dpr, dpr)`
 - **Alpha:** `ctx.globalAlpha = ALPHA`
 - **При перезагрузке:** очищается (данные уже в БД → появятся на Layer 1)
-
----
-
-## Анимация (Layer 2)
-
-Управляется хуком `useFingerprintAnimation`:
-
-1. `setInterval` с базовой частотой `BASE_INTERVAL` (1000ms)
-2. На каждом тике для каждого отпечатка сессии:
-   - `SKIP_PROBABILITY` (60%) шанс пропустить
-   - Если не пропущен: `setTimeout` с рандомным отклонением (0..`MAX_DEVIATION` 1000ms)
-   - Смена состояния на CLICKED → через `CLICK_DURATION` (150ms) обратно на POINTER
-3. Отсутствие общего ритма — каждый отпечаток кликает независимо
 
 ---
 
@@ -104,7 +91,6 @@ void main() {
 | HOTSPOT_X | 0.265 | Горячая точка курсора по X |
 | HOTSPOT_Y | 0.09 | Горячая точка курсора по Y |
 | IMAGE_URL | pointer.png | Текстура отпечатка |
-| IMAGE_CLICKED_URL | pointer_clicked.png | Текстура при анимации клика |
 
 ---
 
@@ -174,7 +160,7 @@ cursorTrackerRef.saveClickPosition({ x%, y% })
 | GPU memory (10k) | ~80KB instance buffer + текстура |
 | API read (10k) | ~5ms SQLite + network |
 | API write | batch POST, debounced 500ms |
-| Анимация | 1 setInterval, только Layer 2 |
+| Добавление клика | 1 drawImage (без полного redraw) |
 
 ### Оценка производительности
 
@@ -207,13 +193,12 @@ cursorTrackerRef.saveClickPosition({ x%, y% })
 - **POST batch:** debounce 500ms. При 6 кликах/сек накапливает ~3 клика → ~100 байт JSON. Минимальная нагрузка.
 - **Нет WebSocket/polling:** данные загружаются один раз, новые отпечатки других пользователей видны только при перезагрузке.
 
-#### Animation (Layer 2)
+#### Layer 2 — добавление клика
 
-- **1 setInterval (1000ms):** на каждом тике итерация по сессионным кликам.
-- **60% skip probability:** в среднем 40% отпечатков меняют состояние за тик.
-- **setTimeout разброс (0-1000ms):** каждый клик получает свой таймер → десятки setTimeout одновременно.
-- **Для 100 отпечатков:** ~40 setTimeout + 40 revert setTimeout = 80 таймеров/тик. Браузер справляется без проблем.
-- **Для 500+ отпечатков:** может быть заметен overhead от setState (каждый setClickState создаёт новый массив). Потенциальная оптимизация: batch state updates.
+- **Инкрементальный рендер:** при добавлении рисуется только 1 новый отпечаток (`drawSingleFingerprint`), без полного redraw.
+- **Refs-only:** данные хранятся в `sessionClicksRef`, без React state → 0 re-renders.
+- **Стоимость добавления:** 1 `push` + 1 `drawImage` ≈ **< 0.1ms** независимо от количества существующих отпечатков.
+- **Полный redraw** (`redrawSession`) вызывается только при resize окна.
 
 #### SQLite (Server)
 
@@ -228,7 +213,7 @@ cursorTrackerRef.saveClickPosition({ x%, y% })
 |-------|-------------|---------|
 | 50k+ отпечатков | Float32Array аллокация (~4ms) | Кеширование buffer'а, инкрементальный append |
 | 100k+ | JSON.parse ответа API (~10ms) | Бинарный формат (ArrayBuffer) или пагинация |
-| 500+ сессионных кликов | setState overhead в анимации | useRef + requestAnimationFrame вместо setState |
+| 1500+ сессионных кликов при resize | redrawSession ~5-15ms | Допустимо, resize — редкая операция |
 | 1M+ в БД | Размер GET ответа (~2MB) | Пагинация или spatial indexing |
 
 ---
