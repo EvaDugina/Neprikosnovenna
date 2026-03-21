@@ -1,6 +1,6 @@
-import { useState, useEffect, useRef, useCallback } from 'react'
+import { useState, useEffect, useRef, useCallback } from "react"
 
-const API_URL = '/api/fingerprints'
+const API_URL = "/api/fingerprints"
 const DEBOUNCE_DELAY = 500
 
 export function useFingerprintAPI() {
@@ -8,6 +8,13 @@ export function useFingerprintAPI() {
     const [isReady, setIsReady] = useState(false)
     const pendingRef = useRef([])
     const timerRef = useRef(null)
+    const isMountedRef = useRef(true)
+
+    useEffect(() => {
+        return () => {
+            isMountedRef.current = false
+        }
+    }, [])
 
     const flushPending = useCallback(() => {
         const batch = pendingRef.current
@@ -16,16 +23,18 @@ export function useFingerprintAPI() {
         pendingRef.current = []
 
         fetch(API_URL, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ fingerprints: batch }),
         })
             .then((res) => res.json())
             .then((data) => {
+                if (!isMountedRef.current) return
                 console.log(`Fingerprints in DB: added ${data.added}, total ${data.total}`)
             })
             .catch((err) => {
-                console.warn('useFingerprintAPI: POST failed', err)
+                if (!isMountedRef.current) return
+                console.warn("useFingerprintAPI: POST failed", err)
             })
     }, [])
 
@@ -47,8 +56,8 @@ export function useFingerprintAPI() {
                 }
             })
             .catch((err) => {
-                console.warn('useFingerprintAPI: GET failed', err)
-                setIsReady(true)
+                console.error("useFingerprintAPI: GET failed", err)
+                if (!cancelled) setIsReady(true)
             })
 
         return () => {
@@ -74,10 +83,10 @@ export function useFingerprintAPI() {
         pendingRef.current = []
 
         try {
-            await fetch(API_URL, { method: 'DELETE' })
-            setDbFingerprints([])
+            await fetch(API_URL, { method: "DELETE" })
+            if (isMountedRef.current) setDbFingerprints([])
         } catch (err) {
-            console.warn('useFingerprintAPI: DELETE failed', err)
+            console.warn("useFingerprintAPI: DELETE failed", err)
         }
     }, [])
 

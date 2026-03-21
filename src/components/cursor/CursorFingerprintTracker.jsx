@@ -47,6 +47,8 @@ const CursorFingerprintTracker = forwardRef((props, ref) => {
   const webglRenderRef = useRef(null);
   const dbFingerprintsRef = useRef([]);
   const lastSpawnTimeRef = useRef(0);
+  const instanceBufferDataRef = useRef(null);
+  const webglImageRef = useRef(null);
 
   // Fade-in
   const [isVisible, setIsVisible] = useState(false);
@@ -65,11 +67,20 @@ const CursorFingerprintTracker = forwardRef((props, ref) => {
   // ===== LAYER 2: Preload image =====
   useEffect(() => {
     const img = new Image();
-    img.src = IMAGE_URL;
     img.onload = () => {
       pointerImgLoadedRef.current = true;
     };
+    img.onerror = () => {
+      console.error("CursorFingerprintTracker: Failed to load pointer image:", IMAGE_URL);
+    };
+    img.src = IMAGE_URL;
     pointerImgRef.current = img;
+
+    return () => {
+      img.onload = null;
+      img.onerror = null;
+      img.src = "";
+    };
   }, [IMAGE_URL]);
 
   // ===== FADE-IN =====
@@ -283,7 +294,6 @@ const CursorFingerprintTracker = forwardRef((props, ref) => {
     textureRef.current = texture;
 
     const image = new Image();
-    image.src = IMAGE_URL;
     image.onload = () => {
       gl.bindTexture(gl.TEXTURE_2D, textureRef.current);
       gl.texImage2D(
@@ -301,6 +311,11 @@ const CursorFingerprintTracker = forwardRef((props, ref) => {
       textureLoadedRef.current = true;
       webglRenderRef.current?.();
     };
+    image.onerror = () => {
+      console.error("CursorFingerprintTracker: Failed to load texture:", IMAGE_URL);
+    };
+    image.src = IMAGE_URL;
+    webglImageRef.current = image;
 
     gl.enable(gl.BLEND);
     gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
@@ -326,7 +341,10 @@ const CursorFingerprintTracker = forwardRef((props, ref) => {
       const sizeNdcX = SPRITE_SIZE / canvasWidth;
       const sizeNdcY = SPRITE_SIZE / canvasHeight;
 
-      const instanceData = new Float32Array(instanceCount * 2);
+      if (!instanceBufferDataRef.current || instanceBufferDataRef.current.length < instanceCount * 2) {
+        instanceBufferDataRef.current = new Float32Array(instanceCount * 2);
+      }
+      const instanceData = instanceBufferDataRef.current;
       for (let i = 0; i < instanceCount; i++) {
         const fp = data[i];
         instanceData[i * 2] = (fp.x / 100) * 2 - 1;
@@ -386,6 +404,11 @@ const CursorFingerprintTracker = forwardRef((props, ref) => {
 
     return () => {
       window.removeEventListener("resize", resizeCanvas);
+      if (webglImageRef.current) {
+        webglImageRef.current.onload = null;
+        webglImageRef.current.onerror = null;
+        webglImageRef.current.src = "";
+      }
       if (gl) {
         if (programRef.current) gl.deleteProgram(programRef.current);
         if (textureRef.current) gl.deleteTexture(textureRef.current);
@@ -439,6 +462,7 @@ const CursorFingerprintTracker = forwardRef((props, ref) => {
 
     return () => {
       window.removeEventListener("resize", resizeSessionCanvas);
+      sessionCtxRef.current = null;
     };
   }, []);
 
@@ -464,7 +488,7 @@ const CursorFingerprintTracker = forwardRef((props, ref) => {
       const py = (click.y / 100) * displayHeight - SPRITE_SIZE * HOTSPOT_Y;
       ctx.drawImage(pointerImg, px, py, SPRITE_SIZE, SPRITE_SIZE);
     }
-  }, [ALPHA, SPRITE_SIZE, HOTSPOT_X, HOTSPOT_Y]);
+  }, []);
 
   // Рисует один отпечаток (при добавлении нового клика)
   const drawSingleFingerprint = useCallback(
@@ -483,17 +507,25 @@ const CursorFingerprintTracker = forwardRef((props, ref) => {
       const py = (click.y / 100) * displayHeight - SPRITE_SIZE * HOTSPOT_Y;
       ctx.drawImage(pointerImg, px, py, SPRITE_SIZE, SPRITE_SIZE);
     },
-    [ALPHA, SPRITE_SIZE, HOTSPOT_X, HOTSPOT_Y],
+    [],
   );
 
   // ===== Imperative API =====
   const saveClickPosition = useCallback(
     (cursorPosition) => {
+      if (
+        !cursorPosition ||
+        typeof cursorPosition.x !== "number" ||
+        typeof cursorPosition.y !== "number"
+      )
+        return;
+
       const now = Date.now();
       if (now - lastSpawnTimeRef.current < THROTTLE_MS) return;
       lastSpawnTimeRef.current = now;
 
-      const { x, y } = cursorPosition;
+      const x = Math.max(0, Math.min(100, cursorPosition.x));
+      const y = Math.max(0, Math.min(100, cursorPosition.y));
       const click = { x, y };
 
       // Layer 2: добавить в ref + нарисовать только новый (без полного redraw)

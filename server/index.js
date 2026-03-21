@@ -8,12 +8,36 @@ const PORT = process.env.PORT || 3001
 app.use(cors())
 app.use(express.json({ limit: '5mb' }))
 
+// Rate limiting for POST
+const RATE_LIMIT_WINDOW = 60000
+const RATE_LIMIT_MAX = 100
+const rateLimitMap = new Map()
+
+function checkRateLimit(ip) {
+    const now = Date.now()
+    const entry = rateLimitMap.get(ip) || { count: 0, resetAt: now + RATE_LIMIT_WINDOW }
+
+    if (now > entry.resetAt) {
+        entry.count = 0
+        entry.resetAt = now + RATE_LIMIT_WINDOW
+    }
+
+    entry.count++
+    rateLimitMap.set(ip, entry)
+
+    return entry.count <= RATE_LIMIT_MAX
+}
+
 app.get('/api/fingerprints', (req, res) => {
     const fingerprints = getAll()
     res.json({ fingerprints })
 })
 
 app.post('/api/fingerprints', (req, res) => {
+    if (!checkRateLimit(req.ip)) {
+        return res.status(429).json({ error: 'Too many requests' })
+    }
+
     const { fingerprints } = req.body
 
     if (!Array.isArray(fingerprints) || fingerprints.length === 0) {
